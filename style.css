@@ -1,0 +1,60 @@
+body , a {
+	font-size:100%;
+	font-family:"calibri","verdana", serif;
+	text-align:center;
+	text-decoration:none;
+}
+
+.grid-container {
+	max-width: 900px;
+	padding-left: 0px;
+    padding-right: 0px;
+}
+
+.grid-20, .grid-40, .grid-100  {
+	padding-left: 0px;
+    padding-right: 0px;
+	max-width: 900px;
+}
+
+.header {
+	background-color:#eee;
+	font-size: 4.0em;
+	line-height:90px;
+	color:blue;
+}
+
+.footer {
+	background-color:#eee;
+	font-size:1.4em;
+	line-height:50px;
+}
+
+.concept {
+	background-color: #ccc;
+	font-size: 6.0em;
+	height:140px;
+	width:100%;
+    display: table;
+	color: #888;
+}
+
+.skill {
+	background-color: #ccc;
+	font-size: 3.0em;
+	height:140px;
+	width:100%;
+    display: table;
+	color:#333;
+}
+
+.flipside{
+	background-color: #eee;
+	font-size:16px;
+}
+
+section {
+    display: table-cell;
+    vertical-align: middle;
+}
+
