@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+<title>Math Cards</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<style>
+* { font-size: 3.5vw; }
+input[type=number]{ width: 10vw; } 
+</style>
+</head>
+
+<body onLoad="reset()">
+
+<div class="w-100 p-3" style="background-color: #eee;">
+<span id="n1" class="form-control-lg"></span>
+<span id="operator" class="form-control-lg"></span>
+<span id="n2" class="form-control-lg"></span>
+<span id="equals" class="form-control-lg">=</span>
+<span class="form-control-lg"><input id="answer" type="number" size=1 oninput="check()"></input></span>
+<span id="result" class="form-control-lg"> </span>
+<span id="reset" class="form-control-lg"><button type="text" size=1 onClick="reset()">&#8635;</button></span>
+</div>
+
+<script>
+function reset() {
+	$("#answer").val("");
+	$("#result").text("");
+	$("#n1").text(Math.ceil(Math.random() * 10));
+	$("#n2").text(Math.ceil(Math.random() * 10));
+	var operator = Math.round(Math.random() * 1); //change this to 2 when adding multiplication, add condition below
+	if (operator == 0) 	{
+		$("#operator").text("+");
+	} 	else  	{
+		$("#operator").text("-");
+		if ( evaluate() < 0) {
+			//swap the numbers so there are no negatives
+			var t = $("#n1").text(); $("#n1").text($("#n2").text()); $("#n2").text(t)
+		}
+	}
+	$("#answer").focus();
+}
+
+function evaluate() {
+	return( eval( $("#n1").text() + $("#operator").text() + $("#n2").text() ) );
+}
+
+function check() {
+	var e = evaluate();
+	var a = $("#answer").val();
+	if (e ==  a) {
+		$("#result").text('\u2714');
+	} 	else {
+		$("#result").text('\u2716');
+	}
+}
+</script>
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>
