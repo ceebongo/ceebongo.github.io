@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 <style>
-* { font-size: 3.5vw; }
+* { font-size: 4vw; }
 input[type=number]{ width: 10vw; } 
 </style>
 </head>
@@ -21,25 +21,33 @@ input[type=number]{ width: 10vw; }
 <span id="equals" class="form-control-lg">=</span>
 <span class="form-control-lg"><input id="answer" type="number" size=1 oninput="check()"></input></span>
 <span id="result" class="form-control-lg"> </span>
-<span id="reset" class="form-control-lg"><button type="text" size=1 onClick="reset()">&#8635;</button></span>
 </div>
 
 <script>
+var timeVar;
+function timedReset() {
+  timeVar = setTimeout(function(){ reset(); }, 1600);
+}
 function reset() {
+	clearTimeout(timeVar);
 	$("#answer").val("");
 	$("#result").text("");
 	$("#n1").text(Math.ceil(Math.random() * 10));
 	$("#n2").text(Math.ceil(Math.random() * 10));
-	var operator = Math.round(Math.random() * 1); //change this to 2 when adding multiplication, add condition below
+	var operator = Math.round(Math.random() * 1); //change this to 2 when adding multiplication
 	if (operator == 0) 	{
 		$("#operator").text("+");
-	} 	else  	{
+	} 	
+	if (operator == 1) {
 		$("#operator").text("-");
 		if ( evaluate() < 0) {
 			//swap the numbers so there are no negatives
 			var t = $("#n1").text(); $("#n1").text($("#n2").text()); $("#n2").text(t)
 		}
 	}
+	if (operator == 2) 	{
+		$("#operator").text("*");
+	} 	
 	$("#answer").focus();
 }
 
@@ -48,11 +56,13 @@ function evaluate() {
 }
 
 function check() {
-	var e = evaluate();
-	var a = $("#answer").val();
-	if (e ==  a) {
+	if ($("#answer").val() == evaluate()) {
+		//correct - show check mark
 		$("#result").text('\u2714');
+		timedReset();
 	} 	else {
+		//wrong - show X mark
+		clearTimeout(timeVar);
 		$("#result").text('\u2716');
 	}
 }

@@ -34,10 +34,18 @@
 	color:#666666;
 }
 
-.footer {
+.footerRight {
 	position:fixed;
 	bottom:0;
 	right:10;
+	font-family:"calibri","verdana", sans-serif;
+	font-size:3em;
+}
+
+.footerLeft {
+	position:fixed;
+	bottom:0;
+	left:10;
 	font-family:"calibri","verdana", sans-serif;
 	font-size:3em;
 }
