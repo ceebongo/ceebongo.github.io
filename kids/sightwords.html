@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+<title>Sight Words</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<style>
+* { font-size: 8vw; }
+.text { font-size: 2vw; }
+</style>
+</head>
+
+<body onLoad="reset()">
+
+<div class="w-100 p-3" style="background-color: #eee;">
+<div id="hints" class="text">Tap/Click in the page and say the sight word</div>
+<div>
+<span id="sightWord" class="form-control-lg">word</span>
+<span><button size=1>&#x1F508;</button></span>
+</div
+</div>
+<div id="output" class="text">...diagnostic messages</div>
+</div>
+<script>
+var timeVar;
+var words = ['the', 'that', 'when', 'this'];
+var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
+var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
+var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
+var grammar = '#JSGF V1.0; grammar words; public <word> = ' + words.join(' | ') + ' ;'
+var recognition = new SpeechRecognition();
+var speechRecognitionList = new SpeechGrammarList();
+speechRecognitionList.addFromString(grammar, 1);
+recognition.grammars = speechRecognitionList;
+recognition.lang = 'en-US';
+recognition.interimResults = false;
+recognition.maxAlternatives = 1;
+
+function timedReset() {
+  timeVar = setTimeout(function(){ reset(); }, 1600);
+}
+
+function reset() {
+	$("#sightWord").text( words[ Math.ceil(Math.random() * words.length - 1) ] );
+}
+
+document.body.onclick = function() {
+  recognition.start();
+  console.log('Ready to receive a color command.');
+}
+
+recognition.onresult = function(event) {
+  // The SpeechRecognitionEvent results property returns a SpeechRecognitionResultList object
+  // The SpeechRecognitionResultList object contains SpeechRecognitionResult objects.
+  // It has a getter so it can be accessed like an array
+  // The [last] returns the SpeechRecognitionResult at the last position.
+  // Each SpeechRecognitionResult object contains SpeechRecognitionAlternative objects that contain individual results.
+  // These also have getters so they can be accessed like arrays.
+  // The [0] returns the SpeechRecognitionAlternative at position 0.
+  // We then return the transcript property of the SpeechRecognitionAlternative object
+
+  var last = event.results.length - 1;
+  var word = event.results[last][0].transcript;
+
+  $("#output").text('Result received: ' + word + '.');
+  console.log('Confidence: ' + event.results[0][0].confidence);
+}
+
+recognition.onspeechend = function() {
+  recognition.stop();
+}
+
+recognition.onnomatch = function(event) {
+  $("#output").text("I didn't recognise that word.");
+}
+
+recognition.onerror = function(event) {
+  $("#output").text('Error occurred in recognition: ' + event.error);
+}
+
+</script>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+</body>
+</html>
