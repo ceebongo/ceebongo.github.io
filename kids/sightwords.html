@@ -19,7 +19,6 @@
 <div class="w-100 p-1" style="background-color: #eee;">
 <span><button class="btn btn-light" id="sightWord" onclick="recognition.start()"></button></span>
 <span><button class="btn btn-dark p-1" id="hint" size=1 onclick="hint()">Hint &#x1F508;</button></span>
-<div id="output">... messages</div>
 </div>
 <script>
 var timeVar;
@@ -64,10 +63,12 @@ recognition.onresult = function(event) {
 
   var last = event.results.length - 1;
   var word = event.results[last][0].transcript;
-  $("#output").text('Result received: ' + word + '.');
+  console.log('Result received: ' + word + '.');
   if ( word == $("#sightWord").text() ) {
 	speak("Good Job!");
 	timedReset();
+  }   else {
+	speak("Sorry, try again");
   }
   //console.log('Confidence: ' + event.results[0][0].confidence);
 }
@@ -77,11 +78,11 @@ recognition.onspeechend = function() {
 }
 
 recognition.onnomatch = function(event) {
-  $("#output").text("I didn't recognise that word.");
+  speak("I didn't recognise that word.");
 }
 
 recognition.onerror = function(event) {
-  $("#output").text('Error occurred in recognition: ' + event.error);
+  console.log('Error occurred in recognition: ' + event.error);
 }
 
 function hint() {
