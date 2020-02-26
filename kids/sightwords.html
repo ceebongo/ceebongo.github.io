@@ -6,26 +6,25 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
 <style>
-* { font-size: 8vw; }
-.text { font-size: 2vw; }
+* { font-size: 10vw; }
+#output { font-size: 2vw; }
+#hint { font-size: 2vw; }
 </style>
 </head>
 
 <body onLoad="reset()">
 
-<div class="w-100 p-3" style="background-color: #eee;">
-<div id="hints" class="text">Tap/Click in the page and say the sight word</div>
-<div>
-<span id="sightWord" class="form-control-lg">word</span>
-<span><button size=1>&#x1F508;</button></span>
-</div
-</div>
-<div id="output" class="text">...diagnostic messages</div>
+<div class="w-100 p-1" style="background-color: #eee;">
+<span><button class="btn btn-light" id="sightWord" onclick="recognition.start()"></button></span>
+<span><button class="btn btn-dark p-1" id="hint" size=1 onclick="hint()">Hint &#x1F508;</button></span>
+<div id="output">... messages</div>
 </div>
 <script>
 var timeVar;
 var words = ['the', 'that', 'when', 'this'];
+// Speech recognition
 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
 var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
 var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
@@ -37,6 +36,8 @@ recognition.grammars = speechRecognitionList;
 recognition.lang = 'en-US';
 recognition.interimResults = false;
 recognition.maxAlternatives = 1;
+//speech synthesis
+var synth = window.speechSynthesis;
 
 function timedReset() {
   timeVar = setTimeout(function(){ reset(); }, 1600);
@@ -46,9 +47,9 @@ function reset() {
 	$("#sightWord").text( words[ Math.ceil(Math.random() * words.length - 1) ] );
 }
 
-document.body.onclick = function() {
+$("#sightWord").onclick = function() {
   recognition.start();
-  console.log('Ready to receive a color command.');
+  console.log('Ready to listen to sight words.');
 }
 
 recognition.onresult = function(event) {
@@ -63,9 +64,12 @@ recognition.onresult = function(event) {
 
   var last = event.results.length - 1;
   var word = event.results[last][0].transcript;
-
   $("#output").text('Result received: ' + word + '.');
-  console.log('Confidence: ' + event.results[0][0].confidence);
+  if ( word == $("#sightWord").text() ) {
+	speak("Good Job!");
+	timedReset();
+  }
+  //console.log('Confidence: ' + event.results[0][0].confidence);
 }
 
 recognition.onspeechend = function() {
@@ -80,7 +84,33 @@ recognition.onerror = function(event) {
   $("#output").text('Error occurred in recognition: ' + event.error);
 }
 
+function hint() {
+	speak( $("#sightWord").text() );
+}
+
+function speak(sayThis){
+    if (synth.speaking) {
+        console.error('speechSynthesis.speaking');
+        return;
+    }
+    var utterThis = new SpeechSynthesisUtterance(sayThis);
+    utterThis.onend = function (event) {
+        console.log('SpeechSynthesisUtterance.onend');
+    }
+    utterThis.onerror = function (event) {
+        console.error('SpeechSynthesisUtterance.onerror');
+    }
+	var voices = synth.getVoices();
+	for(i = 0; i < voices.length ; i++) {
+		if(voices[i].name === "Google US English") {
+			utterThis.voice = voices[i]; break;
+		}
+	}
+    utterThis.pitch = 1.0;
+    utterThis.rate = 0.6;
+    synth.speak(utterThis);
+  }
+
 </script>
-<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
 </body>
 </html>

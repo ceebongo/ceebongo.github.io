@@ -7,20 +7,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 <style>
-* { font-size: 10vw; }
-input[type=number]{ width: 12vw; } 
+* { font-size: 4vw; }
+input[type=number]{ width: 10vw; } 
 </style>
 </head>
 
 <body onLoad="reset()">
 
 <div class="w-100 p-3" style="background-color: #eee;">
-<span id="n1" ></span>
-<span id="operator" ></span>
-<span id="n2" ></span>
-<span id="equals" >=</span>
-<span ><input id="answer" type="number" size=1 oninput="check()"></input></span>
-<span id="result" > </span>
+<span id="n1" class="form-control-lg"></span>
+<span id="operator" class="form-control-lg"></span>
+<span id="n2" class="form-control-lg"></span>
+<span id="equals" class="form-control-lg">=</span>
+<span class="form-control-lg"><input id="answer" type="number" size=1 oninput="check()"></input></span>
+<span id="result" class="form-control-lg"> </span>
 </div>
 
 <script>
