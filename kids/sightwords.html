@@ -8,21 +8,28 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
 <style>
-* { font-size: 10vw; }
+* { font-size: 12vw; }
 #output { font-size: 2vw; }
-#hint { font-size: 2vw; }
+#hint { font-size: 4vw; }
 </style>
 </head>
 
 <body onLoad="reset()">
-
 <div class="w-100 p-1" style="background-color: #eee;">
-<span><button class="btn btn-light" id="sightWord" onclick="recognition.start()"></button></span>
-<span><button class="btn btn-dark p-1" id="hint" size=1 onclick="hint()">Hint &#x1F508;</button></span>
+
+<div class="row">
+  <div class="col-sm-9">
+	<button class="btn btn-light" id="sightWord" size="10" onclick="recognition.start()"></button>
+  </div>
+  <div class="col-sm-3">
+	<button class="btn btn-dark p-1" size="1" id="hint" onclick="hint()">Hint &#x1F508;</button>
+  </div>
 </div>
+</div>
+
 <script>
 var timeVar;
-var words = ['the', 'that', 'when', 'this'];
+var words = ["the", "and", "I", "it", "said", "up", "is", "to", "and", "you", "in", "for", "look", "red", "go", "little", "can", "not", "my", "big", "where", "we", "down", "see", "one", "me", "come", "orange", "jump", "here", "make", "play", "find", "funny", "was", "away", "help", "two", "run", "three", "he", "yellow", "that", "one", "but", "with", "there", "be", "am", "she", "they", "at", "all", "out", "have", "green", "do", "what", "get", "this", "yes", "are", "no", "did", "so", "like", "will", "went", "now", "blue", "came", "into", "want", "pretty", "saw", "ran", "who", "ride", "good", "too", "four", "well", "eat", "purple", "new", "soon", "ate", "under", "of", "had", "her", "must", "our", "say", "please", "his", "him", "pink", "some", "then", "when", "them", "an", "just", "black", "as", "could", "were", "ask", "over", "from", "white", "any", "know", "take", "old", "after", "let", "walk", "how", "put", "every", "by", "think", "going", "brown"];
 // Speech recognition
 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
 var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
