@@ -1,0 +1,78 @@
+.hero {
+	width: 100%;
+	height: 100%;
+	min-width: 100%;
+	min-height: 100%;
+	position: relative;
+	font-size:100%;
+	font-family:"calibri","verdana", sans-serif;
+	text-decoration:none;
+	display: flex;
+	flex-direction: column;
+}
+
+.hero::before {
+	background-image: url("PurpOwl.png");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	content: "";
+	display: block;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: -2;
+	opacity: 0.3;
+}
+
+body {
+	color:#111111;
+	padding-top: 50px;
+}
+
+.menu {
+	position:fixed;
+	top:0;
+	left:10;
+	font-family:"calibri","verdana", sans-serif;
+	font-size:1.5em;
+	padding-left:20px
+}
+
+.nav-link {
+	padding-left:20px
+}
+
+.copyTitle {
+	font-size:1.8em;
+	padding:20px;
+}
+
+.copy {
+	font-size:1.3em;
+	padding-left :30px;
+	padding-right :20px;
+	padding-bottom :10px;
+}
+
+.footerRight {
+	position:fixed;
+	bottom:0;
+	right:10;
+	font-family:"calibri","verdana", sans-serif;
+	font-size:1.5em;
+}
+
+.footerLeft {
+	position:fixed;
+	bottom:0;
+	left:10;
+	font-family:"calibri","verdana", sans-serif;
+	font-size:3em;
+}
+
+a 
+{
+	text-decoration: none;
+	color:#8400FF;
+}
