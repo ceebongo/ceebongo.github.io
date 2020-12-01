@@ -7,14 +7,30 @@
 	<body>
 		
 		<ul>
-			<li><a class="nav-link" href="#home">Get Swen</a></li>
+			<li><a class="nav-link" href="#home">SWEN</a></li>
 			<li><a class="nav-link" href="#what">What</a></li>
 			<li><a class="nav-link" href="#why">Why</a></li>
 			<li><a class="nav-link" href="#how">How</a></li>
 			<li><a class="nav-link" href="#new">New</a></li>
 			<li><a class="nav-link" href="#donate">Donate</a></li>
+			<li><a class="nav-link" href="#terms">Terms</a></li>
 		</ul>
 		
+		<div class="donateColumn">
+			<div class="donateTitle"><a id="donate">Donate</a></div>
+			<div class="donate">We rely entirely on donations to keep SWEN going. Thank you for your generous support.</div>
+			<div id="smart-button-container">
+			  <div style="text-align: left;">
+				<div>
+				  <select id="item-options" style="width:100%;"><option value="Much Appreciated" price="3">Much Appreciated - 3 USD</option><option value="Thank You" price="5">Thank You - 5 USD</option><option value="You Are Awesome" price="10">You Are Awesome - 10 USD</option><option value="Name Your Feature" price="100">Name Your Feature - 100 USD</option></select>
+				  <select style="visibility: hidden" id="quantitySelect"></select>
+				</div>
+			  <div id="paypal-button-container"></div>
+			  </div>
+			</div>	
+		</div>	
+		
+	<div class="content">
 		<div class="copyTitle"><a id="home">Stop Worrying. Experience Nirvana.</a></div>
 			<div class="copy">Noise cancellation for your browsing. The anti-NEWS.</div>
 		<div class="copyTitle"><a id="what">What</a></div>
@@ -26,7 +42,7 @@
 		<div class="copyTitle"><a id="why">Why</a></div>
 			<div class="copy">The news sucks. It's a constant drumbeat of 'Breaking News' that is neither breaking nor news - it's mostly garbage. Do we really need an endless stream of drivel about inane celebrities or the day to day horse shit that passes for politics?</div>
 			<div class="copy">Why do news sites do this? What is the motivation? They have to, because, advertising. They need a constant 'look at this flashy thing' gimmick so you visit the site often. The more you visit, the more ad revenue they make. It is a self enforcing feedback loop for all the players involved. Except, in this game, only you are the loser. The news site is happy to sell you 'news', and the advertiser is happy to sell you whatever junk they are peddling. </div>
-			<div class="copy"><a href="https://markmanson.net/why-you-should-quit-the-news">For an eloquent and beautifully reasoned argument, we highly recommend reading this excellent article by Mark Manson.</a></div>
+			<div class="copy"><a href="https://markmanson.net/why-you-should-quit-the-news">We highly recommend reading this excellent article by Mark Manson on "Why You Should Quit the News".</a></div>
 			<div class="copy">Our main focus is legitimate news sites, but we also have switches to block Social Media and Fake News sites. These <a href="https://en.wikipedia.org/wiki/The_Social_Dilemma">sites provide</a> <a href="https://researchguides.austincc.edu/c.php?g=612891&p=4258046">no social</a> <a href="https://www.cits.ucsb.edu/fake-news/danger-social">value</a>. </div>
 		<div class="copyTitle"><a id="how">How</a></div>
 			<div class="copy">Our algorithm gathers news events every fifteen minutes and ranks them based on global importance. We get data on news events and articles from around thousands of news sites around the world. Every 15 minutes, we update our database of news articles, and we only store 7 days worth of articles. Using a consensus-type algorithm, we rank the importance of events. If more news articles are talking about an event, it rises up in the rankings. Recency of articles also increases their rank.</div>
@@ -39,10 +55,100 @@
 		<div class="copyTitle"><a id="donate">Donate</a></div>
 			<div class="copy">We strongly believe in our purpose of trying to eliminate as much noise from the news as possible. BUT. Writing code, running servers, troubleshooting - all cost money. Our hope is that we receive enough in donations to keep this going.</div> 	
 			<div class="copy">Thank you for your generous support.</div>				
-
+		<div class="copyTitle"><a id="terms">Terms</a></div>
+			<div class="copy">SWEN makes no representations, guarantees, or promises of any kind. If you use SWEN, you may not hold SWEN liable for any reason whatsoever.</div>
+			<div class="copy"> We're all adults here. Be responsible for your actions. Let's try to not ruin a good thing.</div>
+			<div class="copy"></div>
+			<div class="copy"></div>
+			<div class="copy">© 2020 SWEN. All rights reserved.</div>
+			<div class="copy"></div>
+	</div>
 		<div class="footerRight" >
 			<a href='mailto:info@cogito-inc.com?subject=Information%20Request' target="_blank">?&#x2709;</a>
 		</div>
+
+    <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD" data-sdk-integration-source="button-factory"></script>
+    <script>
+      function initPayPalButton() {
+        var shipping = 0;
+        var itemOptions = document.querySelector("#smart-button-container #item-options");
+    var quantity = parseInt();
+    var quantitySelect = document.querySelector("#smart-button-container #quantitySelect");
+    if (!isNaN(quantity)) {
+      quantitySelect.style.visibility = "visible";
+    }
+    var orderDescription = '';
+    if(orderDescription === '') {
+      orderDescription = 'Item';
+    }
+    paypal.Buttons({
+      style: {
+        shape: 'rect',
+        color: 'gold',
+        layout: 'vertical',
+        label: 'paypal',
+        
+      },
+      createOrder: function(data, actions) {
+        var selectedItemDescription = itemOptions.options[itemOptions.selectedIndex].value;
+        var selectedItemPrice = parseFloat(itemOptions.options[itemOptions.selectedIndex].getAttribute("price"));
+        var tax = (0 === 0) ? 0 : (selectedItemPrice * (parseFloat(0)/100));
+        if(quantitySelect.options.length > 0) {
+          quantity = parseInt(quantitySelect.options[quantitySelect.selectedIndex].value);
+        } else {
+          quantity = 1;
+        }
+
+        tax *= quantity;
+        tax = Math.round(tax * 100) / 100;
+        var priceTotal = quantity * selectedItemPrice + parseFloat(shipping) + tax;
+        priceTotal = Math.round(priceTotal * 100) / 100;
+        var itemTotalValue = Math.round((selectedItemPrice * quantity) * 100) / 100;
+
+        return actions.order.create({
+          purchase_units: [{
+            description: orderDescription,
+            amount: {
+              currency_code: 'USD',
+              value: priceTotal,
+              breakdown: {
+                item_total: {
+                  currency_code: 'USD',
+                  value: itemTotalValue,
+                },
+                shipping: {
+                  currency_code: 'USD',
+                  value: shipping,
+                },
+                tax_total: {
+                  currency_code: 'USD',
+                  value: tax,
+                }
+              }
+            },
+            items: [{
+              name: selectedItemDescription,
+              unit_amount: {
+                currency_code: 'USD',
+                value: selectedItemPrice,
+              },
+              quantity: quantity
+            }]
+          }]
+        });
+      },
+      onApprove: function(data, actions) {
+        return actions.order.capture().then(function(details) {
+          alert('Transaction completed by ' + details.payer.name.given_name + '!');
+        });
+      },
+      onError: function(err) {
+        console.log(err);
+      },
+    }).render('#paypal-button-container');
+  }
+  initPayPalButton();
+    </script>
 
 	</body>
 </html>
