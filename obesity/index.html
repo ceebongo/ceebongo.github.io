@@ -5,150 +5,202 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-3 col-md-4 col-lg-3" style="background-color:rgb(230, 230, 216);">
+                <form id="input-form">
+                    <div>
+                        <div id="height-entry-title" class="row">
+                            <div class="col-4">
+                                <h5></h5>
+                            </div>
+                            <div class="col-4">
+                                <h6>Ft</h6>
+                            </div>
+                            <div class="col-4">
+                                <h6>In</h6>
+                            </div>
+                        </div>
+                        <div id="input-height" class="row">
+                            <div class="col-4">
+                                <h5>Height</h5>
+                            </div>
+                            <div class="col-4">
+                                <select id="input-feet" class="form-select ">
+                                    <option value="4">4</option>
+                                    <option selected value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                </select>
+                            </div>
+                            <div class="col-4">
+                                <select id="input-inch" class="form-select ">
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6" selected>6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                </select>
+                            </div>
+                        </div>
+                        <hr />
+                        <div id="weight-record-title" class="row">
+                            <div class="col-2">
+                            </div>
+                            <div class="col-5">
+                                <h5>Age</h5>
+                            </div>
+                            <div class="col-5">
+                                <h5>Weight</h5>
+                            </div>
+                        </div>
+                        <div id="record-container">
+                            <div class="row">
+                                <div class="col-2">
+                                </div>
+                                <div class="col-5">
+                                    <input type="number" class="form-control" name="weightRecord[0][age]"
+                                        placeholder="20">
+                                </div>
+                                <div class="col-5">
+                                    <input type="number" class="form-control" name="weightRecord[0][weight]"
+                                        placeholder="200">
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div id="action-buttons" class="row">
+                            <div class="col-6">
+                                <button type="button" id="add-new-record" class="bt btn-primary">Add Age Record</button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" id="chart-outcome" class="bt btn-primary">Chart Outcome</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-sm-9 col-md-8 col-lg-9">
+                <div id="bmi_chart" width="100%" height="100vh"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to add new age and weight fields into input weightRecord
+        let weightRecordCount = 1;
+        document.getElementById('add-new-record').onclick = function () {
+            let template = `
+                <div class="row">
+                    <div class="col-2">
+                    </div>
+                    <div class="col-5">
+                        <input type="number" class="form-control" name="weightRecord[${weightRecordCount}][age]"
+                            placeholder="20">
+                    </div>
+                    <div class="col-5">
+                        <input type="number" class="form-control" name="weightRecord[${weightRecordCount}][weight]"
+                            placeholder="200">
+                    </div>
+                </div>`;
+
+            let container = document.getElementById('record-container');
+            let div = document.createElement('div');
+            div.innerHTML = template;
+            container.appendChild(div);
+            weightRecordCount++;
+        }
+    </script>
+
+
     <script type="text/javascript">
         google.charts.load('current', { 'packages': ['corechart'] });
-        google.charts.setOnLoadCallback(drawChart);
+        //google.charts.setOnLoadCallback(drawChart);
+
+        // Setup Chart options
+        var options = {
+            title: 'BMI History and Intervention Outcomes',
+            seriesType: 'area',
+            isStacked: 'true',
+            series: {
+                0: { legend: 'none', lineWidth: 0, color: 'blue' },     //BMI underweight
+                1: { lineWidth: 0, color: 'green' },                    //BMI normal
+                2: { lineWidth: 0, color: 'yellow' },                   //BMI overweight
+                3: { lineWidth: 0, color: 'orange' },                   //BMI obese
+                4: { lineWidth: 0, color: 'red' },                      //BMI morbidly obese
+                5: { lineWidth: 3, color: 'black', type: 'line', curveType: 'function' }, // Patient BMI
+                6: { lineWidth: 3, color: 'green', type: 'line', curveType: 'function' }, // sleeve
+            },
+            vAxis: {
+                title: 'BMI',
+                gridlines: { color: 'transparent' }
+            },
+            hAxis: {
+                title: 'Age',
+                gridlines: { color: 'transparent' }
+            },
+            width: '100%',
+            height: '500'
+        };
+
+        function calculateBMI(weight) {
+            var heightFeet = parseInt(document.getElementById('input-feet').value);
+            var heightInch = parseInt(document.getElementById('input-inch').value);
+            var bmi = (weight / Math.pow(((heightFeet * 12.0) + heightInch), 2)) * 703;
+            // return a null if BMI was computed to 0, because graph should NOT plot this point
+            return (bmi == 0 ? null : bmi);
+        }
+
+        // setup arrays to hold all data for chart
+        var titleData = ['Age', 'BMIu', 'BMIn', 'BMIov', 'BMIob', 'BMImo', 'Patient BMI', 'Sleeve'];
+        var rawData = [];
+
+        // handle 'Chart Outcome' button click
+        document.getElementById('chart-outcome').onclick = function () {
+            rawData = [];
+            rawData.push(titleData);
+
+            let inputData = document.querySelectorAll("input[name^='weightRecord[']");
+            let age = 0; weight = 0;
+            // TO DO: sort age-weight records by age prior to puttin into rawData array
+            for (let i = 0; i < inputData.length; i++) {
+                age = parseInt(inputData[i].value);
+                i++; // have to advance the counter to get the weight record for this age
+                weight = parseInt(inputData[i].value);
+                // see rawData variable setup for column headers
+                // the nulls at the end are so we don't chart intervention outcomes until after input age-weight history
+                const rawDataRecord = [age, 18.5, 10, 5, 10, 30, calculateBMI(weight), null];
+                rawData.push(rawDataRecord);
+            }
+
+            // note at this point, variables age and weight are the last values entered
+            rawData.push([age, 18.5, 10, 5, 10, 30, null, calculateBMI(weight)]);
+            rawData.push([age + 2, 18.5, 10, 5, 10, 30, null, calculateBMI(weight * 0.90)]);
+            rawData.push([age + 6, 18.5, 10, 5, 10, 30, null, calculateBMI(weight * 0.85)]);
+            rawData.push([age + 10, 18.5, 10, 5, 10, 30, null, calculateBMI(weight * 0.83)]);
+            rawData.push([age + 15, 18.5, 10, 5, 10, 30, null, calculateBMI(weight * 0.81)]);
+            drawChart();
+        }
 
         function drawChart() {
-            var data = google.visualization.arrayToDataTable([
-                ['Age', 'BMIu', 'BMIn', 'BMIov', 'BMIob', 'BMImo', 'Patient BMI'],
-                ['10', 18.5, 10, 5, 10, 30, 25],
-                ['20', 18.5, 10, 5, 10, 30, 26],
-                ['30', 18.5, 10, 5, 10, 30, 27],
-                ['40', 18.5, 10, 5, 10, 30, 28],
-                ['50', 18.5, 10, 5, 10, 30, 29],
-                ['60', 18.5, 10, 5, 10, 30, 35],
-                ['70', 18.5, 10, 5, 10, 30, 25],
-                ['80', 18.5, 10, 5, 10, 30, 22],
-                ['90', 18.5, 10, 5, 10, 30, null]
-
-            ]);
-
-            var options = {
-                title: 'BMI History and Surgical Outcome',
-                seriesType: 'area',
-                isStacked: 'true',
-                series: {
-                    0: { legend: 'none', lineWidth: 0, color: 'blue' },
-                    1: { lineWidth: 0, color: 'green' },
-                    2: { lineWidth: 0, color: 'yellow' },
-                    3: { lineWidth: 0, color: 'orange' },
-                    4: { lineWidth: 0, color: 'red' },
-                    5: { lineWidth: 3, color: 'black', type: 'line', curveType: 'function' }
-                },
-                legend: 'none',
-                vAxis: {
-                    title: 'BMI',
-                    gridlines: { color: 'transparent' }
-                },
-                hAxis: {
-                    title: 'Age',
-                    gridlines: { color: 'transparent' }
-                },
-                width: '100%',
-                height: '500'
-            };
-
+            var data = google.visualization.arrayToDataTable(rawData);
             var chart = new google.visualization.ComboChart(document.getElementById('bmi_chart'));
             chart.draw(data, options);
         }
     </script>
-</head>
-
-<body>
-    <div id="input_height" class="container mt-3">
-        <form>
-            <div class="row">
-                <div class="col-sm-1">
-                    <h5></h5>
-                </div>
-                <div class="col-sm-1">
-                    <h6>Ft</h6>
-                </div>
-                <div class="col-sm-1">
-                    <h6>In</h6>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-1">
-                    <h5>Height</h5>
-                </div>
-                <div class="col-sm-1">
-                    <select id="input_feet" class="form-select ">
-                        <option>4</option>
-                        <option selected>5</option>
-                        <option>6</option>
-                        <option>7</option>
-                    </select>
-                </div>
-                <div class="col-sm-1">
-                    <select id="input_inches" class="form-select ">
-                        <option>0</option>
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                        <option selected>6</option>
-                        <option>7</option>
-                        <option>8</option>
-                        <option>9</option>
-                        <option>10</option>
-                        <option>11</option>
-                    </select>
-                </div>
-            </div>            <hr/>
-            <div class="row">
-                <div class="col-sm-1">
-                    <h5>Age</h5>
-                </div>
-                <div class="col-sm-1 d-flex justify-content-center align-items-center">
-                    <h5>10</h5>
-                </div>
-                <div class="col-sm-1 d-flex justify-content-center align-items-center">
-                    <h5>20</h5>
-                </div>
-                <div class="col-sm-1 d-flex justify-content-center align-items-center">
-                    <h5>30</h5>
-                </div>
-                <div class="col-sm-1 d-flex justify-content-center align-items-center">
-                    <h5>40</h5>
-                </div>
-                <div class="col-sm-1 d-flex justify-content-center align-items-center">
-                    <h5>50</h5>
-                </div>
-                <div class="col-sm-1 d-flex justify-content-center align-items-center">
-                    <h5>60</h5>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-1">
-                    <h5>Weight</h5>
-                </div>
-                <div class="col-sm-1">
-                    <input type="number" class="form-control" id="age_10">
-                </div>
-                <div class="col-sm-1">
-                    <input type="number" class="form-control" id="age_20">
-                </div>
-                <div class="col-sm-1">
-                    <input type="number" class="form-control" id="age_30">
-                </div>
-                <div class="col-sm-1">
-                    <input type="number" class="form-control" id="age_40">
-                </div>
-                <div class="col-sm-1">
-                    <input type="number" class="form-control" id="age_50">
-                </div>
-                <div class="col-sm-1">
-                    <input type="number" class="form-control" id="age_60">
-                </div>
-            </div>
-        </form>
-    </div>
-    <div id="bmi_chart" width="90%" height="90vh"></div>
-    
 </body>
 
 </html>
