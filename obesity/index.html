@@ -11,9 +11,9 @@
 </head>
 
 <body>
-    <div class="container-fluid">
+    <div class="container-fluid"  style="background-color:#eeeeee;">
         <div class="row">
-            <div class="col-sm-3 col-md-4 col-lg-3" style="background-color:rgb(230, 230, 216);">
+            <div class="col-sm-3 col-md-4 col-lg-3">
                 <form id="input-form">
                     <div>
                         <div id="height-entry-title" class="row">
@@ -83,11 +83,13 @@
                         </div>
                         <hr />
                         <div id="action-buttons" class="row">
-                            <div class="col-6">
-                                <button type="button" id="add-new-record" class="bt btn-primary">Add Age Record</button>
+                            <div class="col-2">
                             </div>
-                            <div class="col-6">
-                                <button type="button" id="chart-outcome" class="bt btn-primary">Chart Outcome</button>
+                            <div class="col-5">
+                                <button type="button" id="add-new-record" class="btn btn-warning">Record Age</button>
+                            </div>
+                            <div class="col-5">
+                                <button type="button" id="chart-outcome" class="btn btn-primary">Draw Chart</button>
                             </div>
                         </div>
                     </div>
@@ -125,78 +127,120 @@
         }
     </script>
 
-
     <script type="text/javascript">
+        var data; var options; var rawData = [];
+
         google.charts.load('current', { 'packages': ['corechart'] });
-        //google.charts.setOnLoadCallback(drawChart);
+        google.charts.setOnLoadCallback(chartSetup);
 
-        // Setup Chart options
-        var options = {
-            title: 'BMI History and Intervention Outcomes',
-            seriesType: 'area',
-            isStacked: 'true',
-            series: {
-                0: { legend: 'none', lineWidth: 0, color: 'blue' },     //BMI underweight
-                1: { lineWidth: 0, color: 'green' },                    //BMI normal
-                2: { lineWidth: 0, color: 'yellow' },                   //BMI overweight
-                3: { lineWidth: 0, color: 'orange' },                   //BMI obese
-                4: { lineWidth: 0, color: 'red' },                      //BMI morbidly obese
-                5: { lineWidth: 3, color: 'black', type: 'line', curveType: 'function' }, // Patient BMI
-                6: { lineWidth: 3, color: 'green', type: 'line', curveType: 'function' }, // sleeve
-            },
-            vAxis: {
-                title: 'BMI',
-                gridlines: { color: 'transparent' }
-            },
-            hAxis: {
-                title: 'Age',
-                gridlines: { color: 'transparent' }
-            },
-            width: '100%',
-            height: '500'
-        };
+        function chartSetup() {
+            data = new google.visualization.DataTable();
+            data.addColumn('number', 'age');
+            data.addColumn('number', 'BMIu');
+            data.addColumn('number', 'BMIn');
+            data.addColumn('number', 'BMIov');
+            data.addColumn('number', 'BMIob');
+            data.addColumn('number', 'BMImo');
+            data.addColumn('number', 'BMIup');
+            data.addColumn('number', 'patientBMI');
+            data.addColumn('number', 'Sleeve');
+            data.addColumn({ id: 'sleeveU', type: 'number', role: 'interval' });
+            data.addColumn({ id: 'sleeveL', type: 'number', role: 'interval' });
+            data.addColumn('number', 'Saxenda');
+            data.addColumn({ id: 'saxendaU', type: 'number', role: 'interval' });
+            data.addColumn({ id: 'saxendaL', type: 'number', role: 'interval' });
 
-        function calculateBMI(weight) {
-            var heightFeet = parseInt(document.getElementById('input-feet').value);
-            var heightInch = parseInt(document.getElementById('input-inch').value);
-            var bmi = (weight / Math.pow(((heightFeet * 12.0) + heightInch), 2)) * 703;
+            // Setup Chart options
+            options = {
+                title: 'BMI History and Intervention Outcomes',
+                backgroundColor:'#eeeeee',
+                seriesType: 'line',
+                //isStacked: 'true',
+                curveType: 'function',
+                series: {
+                    0: { lineWidth: 1, color: 'blue', lineDashStyle: [2, 2] },                     //BMI underweight
+                    1: { lineWidth: 1, color: 'green', lineDashStyle: [2, 2]  },                    //BMI normal
+                    2: { lineWidth: 1, color: 'yellow', lineDashStyle: [2, 2]  },                   //BMI overweight
+                    3: { lineWidth: 1, color: 'orange', lineDashStyle: [2, 2]  },                   //BMI obese
+                    4: { lineWidth: 1, color: 'red', lineDashStyle: [2, 2]  },                      //BMI morbidly obese
+                    5: { lineWidth: 1, color: 'red', lineDashStyle: [2, 2]  },                      //BMI upper bound
+                    6: { lineWidth: 2, color: 'black', type: 'line', curveType: 'function' }, // Patient BMI
+                    7: { id: 'sleeve', lineWidth: 2, color: 'green' }, // sleeve + 2 interval series: 8, 9
+                    10: { id: 'saxenda', lineWidth: 2, color: 'blue'}, // saxenda + 2 interval series: 11, 12
+                },
+                vAxis: {
+                    title: 'BMI',
+                    gridlines: { color: 'transparent' }
+                },
+                hAxis: {
+                    title: 'Age',
+                    gridlines: { color: 'transparent' }
+                },
+                intervals: { 'style': 'area', 'color': 'series-color', 'fillOpacity': 0.4 },
+                legend: 'bottom',
+                width: '100%',
+                height: '700'
+            };
+        }
+
+        function calculateBMI(weight, height) {
+            var bmi = (weight / Math.pow((height), 2)) * 703;
             // return a null if BMI was computed to 0, because graph should NOT plot this point
             return (bmi == 0 ? null : bmi);
         }
 
-        // setup arrays to hold all data for chart
-        var titleData = ['Age', 'BMIu', 'BMIn', 'BMIov', 'BMIob', 'BMImo', 'Patient BMI', 'Sleeve'];
-        var rawData = [];
-
         // handle 'Chart Outcome' button click
         document.getElementById('chart-outcome').onclick = function () {
             rawData = [];
-            rawData.push(titleData);
+
+            let height = parseInt(document.getElementById('input-feet').value) * 12.0 + parseInt(document.getElementById('input-inch').value);
 
             let inputData = document.querySelectorAll("input[name^='weightRecord[']");
-            let age = 0; weight = 0;
+            let age = 0; let weight = 0; let maxAge = 0; let weightAtMaxAge = 0;
             // TO DO: sort age-weight records by age prior to puttin into rawData array
             for (let i = 0; i < inputData.length; i++) {
                 age = parseInt(inputData[i].value);
                 i++; // have to advance the counter to get the weight record for this age
                 weight = parseInt(inputData[i].value);
+                // store the max age and associated weight for outcome calculations, 
+                // since people might enter weight data in non-chronological order
+                // these will be sorted prior to adding computed outcome values.
+                if (age >= maxAge) {
+                    weightAtMaxAge = weight;
+                    maxAge = age;
+                }
                 // see rawData variable setup for column headers
                 // the nulls at the end are so we don't chart intervention outcomes until after input age-weight history
-                const rawDataRecord = [age, 18.5, 10, 5, 10, 30, calculateBMI(weight), null];
+                const rawDataRecord = [age, 18.5, 25, 30, 35, 40, 80, calculateBMI(weight, height)
+                                        , null, null, null      // sleeve
+                                        , null, null, null      // saxenda
+                                    ];
                 rawData.push(rawDataRecord);
             }
+            // sort by age, which is the 0th element of each record
+            rawData.sort(function (x, y) {
+                return x[0] - y[0];
+            });
 
-            // note at this point, variables age and weight are the last values entered
-            rawData.push([age, 18.5, 10, 5, 10, 30, null, calculateBMI(weight)]);
-            rawData.push([age + 2, 18.5, 10, 5, 10, 30, null, calculateBMI(weight * 0.90)]);
-            rawData.push([age + 6, 18.5, 10, 5, 10, 30, null, calculateBMI(weight * 0.85)]);
-            rawData.push([age + 10, 18.5, 10, 5, 10, 30, null, calculateBMI(weight * 0.83)]);
-            rawData.push([age + 15, 18.5, 10, 5, 10, 30, null, calculateBMI(weight * 0.81)]);
+            // add data fpr intervention types based on TWL and sigma
+            rawData.push([maxAge, 18.5, 25, 30, 35, 40, 80, null
+                    , calculateBMI(weightAtMaxAge, height), calculateBMI(weightAtMaxAge, height), calculateBMI(weightAtMaxAge, height) // Sleeve
+                    , calculateBMI(weightAtMaxAge, height), calculateBMI(weightAtMaxAge, height), calculateBMI(weightAtMaxAge, height) // Saxenda
+                ]);
+            rawData.push([maxAge + 2, 18.5, 25, 30, 35, 40, 80, null
+                    , calculateBMI(weightAtMaxAge * 0.70, height), calculateBMI(weightAtMaxAge * 0.80, height), calculateBMI(weightAtMaxAge * 0.60, height) // sleeve
+                    , calculateBMI(weightAtMaxAge * 0.90, height), calculateBMI(weightAtMaxAge * 0.935, height), calculateBMI(weightAtMaxAge * 0.865, height) // saxenda
+                ]);
+            rawData.push([maxAge + 6, 18.5, 25, 30, 35, 40, 80, null 
+                    , calculateBMI(weightAtMaxAge * 0.70, height), calculateBMI(weightAtMaxAge * 0.85, height), calculateBMI(weightAtMaxAge * 0.55, height)  // sleeve
+                    , calculateBMI(weightAtMaxAge * 0.90, height), calculateBMI(weightAtMaxAge * 0.95, height), calculateBMI(weightAtMaxAge * 0.85, height)  // saxenda
+                ]);
+            data.addRows(rawData);
             drawChart();
         }
 
         function drawChart() {
-            var data = google.visualization.arrayToDataTable(rawData);
+            //var data = google.visualization.arrayToDataTable(rawData);
             var chart = new google.visualization.ComboChart(document.getElementById('bmi_chart'));
             chart.draw(data, options);
         }
